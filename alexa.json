@@ -1,0 +1,131 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "school timetable",
+            "intents": [
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "SetMonday",
+                    "slots": [
+                        {
+                            "name": "Monday",
+                            "type": "AMAZON.SearchQuery"
+                        }
+                    ],
+                    "samples": [
+                        "set monday to {Monday}"
+                    ]
+                },
+                {
+                    "name": "Today",
+                    "slots": [],
+                    "samples": [
+                        "what are my lessons for today",
+                        "my lessons for today",
+                        "what classes do I have today",
+                        "what are my classes today",
+                        "lessons",
+                        "What lessons do I have today",
+                        "My lessons today",
+                        "today",
+                        "What are my lessons today"
+                    ]
+                },
+                {
+                    "name": "SetTuesday",
+                    "slots": [
+                        {
+                            "name": "Tuesday",
+                            "type": "AMAZON.SearchQuery"
+                        }
+                    ],
+                    "samples": [
+                        "set tuesday to {Tuesday}"
+                    ]
+                },
+                {
+                    "name": "SetWednesday",
+                    "slots": [
+                        {
+                            "name": "Wednesday",
+                            "type": "AMAZON.SearchQuery"
+                        }
+                    ],
+                    "samples": [
+                        "set wednesday to {Wednesday}"
+                    ]
+                },
+                {
+                    "name": "SetThursday",
+                    "slots": [
+                        {
+                            "name": "Thursday",
+                            "type": "AMAZON.SearchQuery"
+                        }
+                    ],
+                    "samples": [
+                        "set thursday to {Thursday}"
+                    ]
+                },
+                {
+                    "name": "SetFriday",
+                    "slots": [
+                        {
+                            "name": "Friday",
+                            "type": "AMAZON.SearchQuery"
+                        }
+                    ],
+                    "samples": [
+                        "set friday to {Friday} "
+                    ]
+                },
+                {
+                    "name": "SetSaturday",
+                    "slots": [
+                        {
+                            "name": "Saturday",
+                            "type": "AMAZON.SearchQuery"
+                        }
+                    ],
+                    "samples": [
+                        "set saturday to {Saturday} "
+                    ]
+                },
+                {
+                    "name": "SetSunday",
+                    "slots": [
+                        {
+                            "name": "Sunday",
+                            "type": "AMAZON.SearchQuery"
+                        }
+                    ],
+                    "samples": [
+                        "set sunday to {Sunday} "
+                    ]
+                },
+                {
+                    "name": "Tomorrow",
+                    "slots": [],
+                    "samples": [
+                        "what classes do I have tomorrow",
+                        "What lessons do I have tomorrow",
+                        "my lessons tomorrow",
+                        "What are my lessons tomorrow"
+                    ]
+                }
+            ],
+            "types": []
+        }
+    }
+}
