@@ -4,8 +4,6 @@ import time
 import json
 import boto3
 
-
-
 def save_to_bucket(user_id, user_data):
     s3 = boto3.resource('s3')
     bucket = s3.Bucket('YOUR_BUCKET_ID')
@@ -15,7 +13,6 @@ def save_to_bucket(user_id, user_data):
         Body=json.dumps(user_data)
     )
 
-
 def load_from_bucket(user_id):
     s3 = boto3.client('s3')
     try:
@@ -24,11 +21,7 @@ def load_from_bucket(user_id):
     except:
         return {}
 
-
-
-
 SKILL_NAME = "School Timetable"
-
 HELP_MESSAGE = "School timetable can tell you what lessons you have, but first you must tell me your lessons for the week. You can say, tell school timetable set Monday to Maths Physics and English"
 HELP_REPROMPT = "What can I help you with?"
 LAUNCH_MESSAGE = "School timetable can tell you what lessons you have, but first you must tell me your lessons for the week. You can say, tell school timetable set Monday to Maths Physics and English"
@@ -40,7 +33,6 @@ FALLBACK_REPROMPT = 'What can I help you with?'
 
 def lambda_handler(event, context):
     """  App entry point  """
-
 
     if (event['session']['application']['applicationId'] != "YOUR_AMAZON_SKILL_APP_ID"):
         raise ValueError("Invalid Application ID")
@@ -59,7 +51,6 @@ def lambda_handler(event, context):
 
 def on_intent(request, session):
     """ called on receipt of an Intent  """
-
     intent_name = request['intent']['name']
     intent = request['intent']
     # process the intents
@@ -90,7 +81,6 @@ def on_intent(request, session):
     elif intent_name == "AMAZON.FallbackIntent":
         return get_fallback_response()
     else:
-        print("invalid Intent reply with help")
         return get_help_response()
 
 
@@ -204,12 +194,8 @@ def set_tuesday(intent, session):
     save_to_bucket(session["user"]["userId"], timetable)
     speechOutput = "I have set Tuesday to " + timetable["tuesday"]
     cardcontent = speechOutput
-
-
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
-
-
 
 def set_wednesday(intent, session):
     timetable = load_from_bucket(session["user"]["userId"])
@@ -217,11 +203,8 @@ def set_wednesday(intent, session):
     save_to_bucket(session["user"]["userId"], timetable)
     speechOutput = "I have set Wednesday to " + timetable["wednesday"]
     cardcontent = speechOutput
-
-
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
-
 
 def set_thursday(intent, session):
     timetable = load_from_bucket(session["user"]["userId"])
@@ -229,7 +212,6 @@ def set_thursday(intent, session):
     save_to_bucket(session["user"]["userId"], timetable)
     speechOutput = "I have set Thursday to " + timetable["thursday"]
     cardcontent = speechOutput
-
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
 
@@ -253,23 +235,16 @@ def set_saturday(intent, session):
     save_to_bucket(session["user"]['userId'], timetable)
     speechOutput = "I have set Saturday to " + timetable["saturday"]
     cardcontent = speechOutput
-
-
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
-                                                          cardcontent, True))
-
-
+                                                          cardcontent, True)
 def set_sunday(intent, session):
     timetable = load_from_bucket(session['user']['userId'])
     timetable["sunday"] = intent['slots']['Sunday']['value']
     save_to_bucket(session["user"]['userId'], timetable)
     speechOutput = "I have set Sunday to " + timetable["sunday"]
     cardcontent = speechOutput
-
-
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
-
 def get_help_response():
     """ get and return the help string  """
 
