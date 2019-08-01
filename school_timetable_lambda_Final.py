@@ -10,8 +10,7 @@ def save_to_bucket(user_id, user_data):
     bucket.put_object(
         ContentType='application/json',
         Key=user_id,
-        Body=json.dumps(user_data)
-    )
+        Body=json.dumps(user_data))
 
 def load_from_bucket(user_id):
     s3 = boto3.client('s3')
