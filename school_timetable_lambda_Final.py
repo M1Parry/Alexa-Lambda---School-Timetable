@@ -4,13 +4,16 @@ import time
 import json
 import boto3
 
+
 def save_to_bucket(user_id, user_data):
     s3 = boto3.resource('s3')
     bucket = s3.Bucket('YOUR_BUCKET_ID')
     bucket.put_object(
         ContentType='application/json',
         Key=user_id,
-        Body=json.dumps(user_data))
+        Body=json.dumps(user_data)
+    )
+
 
 def load_from_bucket(user_id):
     s3 = boto3.client('s3')
@@ -20,8 +23,11 @@ def load_from_bucket(user_id):
     except:
         return {}
 
+
+
+
 SKILL_NAME = "School Timetable"
-HELP_MESSAGE = "School timetable can tell you what lessons you have, but first you must tell me your lessons for the week. You can say, tell school timetable set Monday to Maths Physics and English"
+HELP_MESSAGE = "School Timetable will tell you your lessons for the current day or the next. Would you like to set it up?"
 HELP_REPROMPT = "What can I help you with?"
 LAUNCH_MESSAGE = "School timetable can tell you what lessons you have, but first you must tell me your lessons for the week. You can say, tell school timetable set Monday to Maths Physics and English"
 STOP_MESSAGE = "Goodbye!"
@@ -50,15 +56,16 @@ def lambda_handler(event, context):
 
 def on_intent(request, session):
     """ called on receipt of an Intent  """
+
     intent_name = request['intent']['name']
     intent = request['intent']
     # process the intents
-    if intent_name == "SetMonday":
-        return set_monday(intent, session )
-    elif intent_name == "Today":
+    if intent_name == "Today":
         return get_today(intent, session)
     elif intent_name == "Tomorrow":
         return get_tomorrow(intent, session)
+    elif intent_name == "SetMonday":
+        return set_monday(intent, session )
     elif intent_name == "SetTuesday":
         return set_tuesday(intent, session)
     elif intent_name == "SetWednesday":
@@ -80,7 +87,21 @@ def on_intent(request, session):
     elif intent_name == "AMAZON.FallbackIntent":
         return get_fallback_response()
     else:
+        #print("invalid Intent reply with help")
         return get_help_response()
+
+
+def on_intent(request, session):
+
+    intent_name = request['intent']['name']
+    intent = request['intent']
+    timetable = load_from_bucket(session["user"]["userId"])
+    if intent_name == "Today" and timetable == {}:
+        speech_message = HELP_MESSAGE
+        return response(speech_response_prompt(speech_message, speech_message, False))
+        
+
+
 
 
 
@@ -166,13 +187,21 @@ def get_tomorrow(intent, session):
         else:
             speechOutput = "You have no lessons on Sunday"
 
-    cardcontent = speechOutput    return response(speech_response_with_card(SKILL_NAME, speechOutput,
+    cardcontent = speechOutput    
+    return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
 
+# def get_monday(intent, session):
+#     timetable = load_from_bucket(session["user"]["userId"])
+#     speechOutput = "For monday you have " + timetable["monday"]
 
+# def get_tuesday(intent, session):
+#     timetable = load_from_bucket(session["user"]["userId"])
+#     speechOutput = "For tuesday you have " + timetable["tuesday"]
 
-
-
+# def get_wednesday(intent, session):
+#     timetable = load_from_bucket(session["user"]["userId"])
+#     speechOutput = "For Wednesday you have " + timetable["wednesday"]
 
 def set_monday(intent, session):
 
@@ -193,8 +222,12 @@ def set_tuesday(intent, session):
     save_to_bucket(session["user"]["userId"], timetable)
     speechOutput = "I have set Tuesday to " + timetable["tuesday"]
     cardcontent = speechOutput
+
+
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
+
+
 
 def set_wednesday(intent, session):
     timetable = load_from_bucket(session["user"]["userId"])
@@ -202,8 +235,11 @@ def set_wednesday(intent, session):
     save_to_bucket(session["user"]["userId"], timetable)
     speechOutput = "I have set Wednesday to " + timetable["wednesday"]
     cardcontent = speechOutput
+
+
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
+
 
 def set_thursday(intent, session):
     timetable = load_from_bucket(session["user"]["userId"])
@@ -211,6 +247,7 @@ def set_thursday(intent, session):
     save_to_bucket(session["user"]["userId"], timetable)
     speechOutput = "I have set Thursday to " + timetable["thursday"]
     cardcontent = speechOutput
+
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
 
@@ -234,22 +271,29 @@ def set_saturday(intent, session):
     save_to_bucket(session["user"]['userId'], timetable)
     speechOutput = "I have set Saturday to " + timetable["saturday"]
     cardcontent = speechOutput
+
+
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
-                                                          cardcontent, True)
+                                                          cardcontent, True))
+
+
 def set_sunday(intent, session):
     timetable = load_from_bucket(session['user']['userId'])
     timetable["sunday"] = intent['slots']['Sunday']['value']
     save_to_bucket(session["user"]['userId'], timetable)
     speechOutput = "I have set Sunday to " + timetable["sunday"]
     cardcontent = speechOutput
+
+
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
+
 def get_help_response():
     """ get and return the help string  """
 
     speech_message = HELP_MESSAGE
     return response(speech_response_prompt(speech_message,
-                                                       speech_message, True))
+                                                       speech_message, False))
 def get_launch_response(request, session):
     """ get and return the help string  """
     timetable = load_from_bucket(session["user"]["userId"])
