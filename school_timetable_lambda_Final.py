@@ -24,8 +24,6 @@ def load_from_bucket(user_id):
         return {}
 
 
-
-
 SKILL_NAME = "School Timetable"
 HELP_MESSAGE = "School Timetable will tell you your lessons for the current day or the next. Would you like to set it up?"
 HELP_REPROMPT = "What can I help you with?"
@@ -99,10 +97,6 @@ def on_intent(request, session):
     if intent_name == "Today" and timetable == {}:
         speech_message = HELP_MESSAGE
         return response(speech_response_prompt(speech_message, speech_message, False))
-        
-
-
-
 
 
 def get_today(intent, session):
@@ -146,7 +140,6 @@ def get_today(intent, session):
     cardcontent = speechOutput
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
-
 
 def get_tomorrow(intent, session):
     localtime = time.asctime( time.localtime(time.time()) )
@@ -215,7 +208,6 @@ def set_monday(intent, session):
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
 
-
 def set_tuesday(intent, session):
     timetable = load_from_bucket(session["user"]["userId"])
     timetable["tuesday"] = intent['slots']['Tuesday']['value']
@@ -226,8 +218,6 @@ def set_tuesday(intent, session):
 
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
-
-
 
 def set_wednesday(intent, session):
     timetable = load_from_bucket(session["user"]["userId"])
@@ -240,7 +230,6 @@ def set_wednesday(intent, session):
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
 
-
 def set_thursday(intent, session):
     timetable = load_from_bucket(session["user"]["userId"])
     timetable["thursday"] = intent['slots']['Thursday']['value']
@@ -250,8 +239,6 @@ def set_thursday(intent, session):
 
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
-
-
 
 def set_friday(intent, session):
     timetable = load_from_bucket(session["user"]["userId"])
@@ -263,7 +250,6 @@ def set_friday(intent, session):
 
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
-
 
 def set_saturday(intent, session):
     timetable = load_from_bucket(session['user']['userId'])
