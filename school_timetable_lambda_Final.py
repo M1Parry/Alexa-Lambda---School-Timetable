@@ -32,7 +32,6 @@ STOP_MESSAGE = "Goodbye!"
 FALLBACK_MESSAGE = "School timetable cannot help with that. You can say 'What are my lessons today' or 'Tell school timetable to set Wednesday to English, Mathematics and Chemistry. What can I help you with?"
 FALLBACK_REPROMPT = 'What can I help you with?'
 
-# --------------- App entry point -----------------
 
 def lambda_handler(event, context):
     """  App entry point  """
@@ -84,59 +83,36 @@ def on_intent(request, session):
         return get_stop_response()
     elif intent_name == "AMAZON.FallbackIntent":
         return get_fallback_response()
-    else:
-        #print("invalid Intent reply with help")
+    else
         return get_help_response()
 
 
 def on_intent(request, session):
-
+    
     intent_name = request['intent']['name']
     intent = request['intent']
     timetable = load_from_bucket(session["user"]["userId"])
-    if intent_name == "Today" and timetable == {}:
-        speech_message = HELP_MESSAGE
-        return response(speech_response_prompt(speech_message, speech_message, False))
+
+days = {
+    "Mon": "monday",
+    "Tue": "tuesday",
+    "Wed": "wednesday",
+    "Thu": "thursday",
+    "Fri": "friday",
+    "Sat": "saturday",
+    "Sun": "sunday"
+}
 
 
 def get_today(intent, session):
     localtime = time.asctime( time.localtime(time.time()) )
     timetable = load_from_bucket(session["user"]["userId"])
-    if "Mon" in localtime:
-        if "monday" in timetable:
-            speechOutput = "Your lessons for Monday are " + timetable["monday"]
-        else:
-            speechOutput = "You have no lessons on Monday"
-    elif "Tue" in localtime:
-        if "Tuesday" in localtime:
-            speechOutput = "Your lessons for Tuesday are " + timetable["tuesday"]
-        else:
-            speechOutput = "You have no lessons on Tuesday"
-    elif "Wed" in localtime:
-        if "wednesday" in timetable:
-            speechOutput = "Your lessons for Wednesday are " + timetable["wednesday"]
-        else:
-            speechOutput = "You have no lessons on Wednesday"
-    elif "Thu" in localtime:
-        if "thursday" in timetable:
-            speechOutput = "Your lessons for Thursday are " + timetable["thursday"]
-        else:
-            speechOutput = "You have no lessons on Thursday"
-    elif "Fri" in localtime:
-        if "friday" in timetable:
-            speechOutput = "Your lessons for Friday are " + timetable["friday"]
-        else:
-            speechOutput = "You have no lessons on Friday"
-    elif "Sat" in localtime:
-        if"saturday" in timetable:
-            speechOutput = "Your lessons for Saturday are " + timetable["saturday"]
-        else:
-            speechOutput = "You have no lessons on Saturday"
-    elif "Sun" in localtime:
-        if "sunday" in timetable:
-            speechOutput = "Your lessons for Sunday are " + timetable["sunday"]
-        else:
-            speechOutput = "You have no lessons on Sunday"
+    for keys in days:
+        if keys in localtime:
+            if days[keys] in timetable:
+                speechOutput = "Your lessons for today are " + timetable[days[keys]]
+            else:
+                speechOutput = "There are no lessons set for today."
     cardcontent = speechOutput
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
@@ -184,17 +160,6 @@ def get_tomorrow(intent, session):
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
 
-# def get_monday(intent, session):
-#     timetable = load_from_bucket(session["user"]["userId"])
-#     speechOutput = "For monday you have " + timetable["monday"]
-
-# def get_tuesday(intent, session):
-#     timetable = load_from_bucket(session["user"]["userId"])
-#     speechOutput = "For tuesday you have " + timetable["tuesday"]
-
-# def get_wednesday(intent, session):
-#     timetable = load_from_bucket(session["user"]["userId"])
-#     speechOutput = "For Wednesday you have " + timetable["wednesday"]
 
 def set_monday(intent, session):
 
@@ -212,7 +177,7 @@ def set_tuesday(intent, session):
     timetable = load_from_bucket(session["user"]["userId"])
     timetable["tuesday"] = intent['slots']['Tuesday']['value']
     save_to_bucket(session["user"]["userId"], timetable)
-    speechOutput = "I have set Tuesday to " + timetable["tuesday"]
+    speechOutput = "I have set Tuesday to " + timetable["tuesday"] fda 
     cardcontent = speechOutput
 
 
@@ -304,11 +269,9 @@ def get_fallback_response():
 
 def on_session_started():
     """" called when the session starts  """
-    #print("on_session_started")
 
 def on_session_ended():
     """ called on session ends """
-    #print("on_session_ended")
 
 def on_launch(request, session):
     """ called on Launch, we reply with a launch message  """
