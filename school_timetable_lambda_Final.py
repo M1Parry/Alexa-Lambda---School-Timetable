@@ -102,7 +102,7 @@ days = {
     "Sat": "saturday",
     "Sun": "sunday"
 }
-
+# Will be used to get_tomorrow
 
 def get_today(intent, session):
     localtime = time.asctime( time.localtime(time.time()) )
