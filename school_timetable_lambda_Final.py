@@ -4,7 +4,6 @@ import time
 import json
 import boto3
 
-
 def save_to_bucket(user_id, user_data):
     s3 = boto3.resource('s3')
     bucket = s3.Bucket('YOUR_BUCKET_ID')
@@ -14,7 +13,6 @@ def save_to_bucket(user_id, user_data):
         Body=json.dumps(user_data)
     )
 
-
 def load_from_bucket(user_id):
     s3 = boto3.client('s3')
     try:
@@ -23,7 +21,6 @@ def load_from_bucket(user_id):
     except:
         return {}
 
-
 SKILL_NAME = "School Timetable"
 HELP_MESSAGE = "School Timetable will tell you your lessons for the current day or the next. Would you like to set it up?"
 HELP_REPROMPT = "What can I help you with?"
@@ -31,7 +28,6 @@ LAUNCH_MESSAGE = "School timetable can tell you what lessons you have, but first
 STOP_MESSAGE = "Goodbye!"
 FALLBACK_MESSAGE = "School timetable cannot help with that. You can say 'What are my lessons today' or 'Tell school timetable to set Wednesday to English, Mathematics and Chemistry. What can I help you with?"
 FALLBACK_REPROMPT = 'What can I help you with?'
-
 
 def lambda_handler(event, context):
     """  App entry point  """
