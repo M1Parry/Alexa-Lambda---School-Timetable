@@ -103,7 +103,6 @@ days = {
     "Sun": "sunday"
 }
 # Will be used to get_tomorrow
-
 def get_today(intent, session):
     localtime = time.asctime( time.localtime(time.time()) )
     timetable = load_from_bucket(session["user"]["userId"])
