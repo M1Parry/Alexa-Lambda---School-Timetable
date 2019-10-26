@@ -4,6 +4,7 @@ import time
 import json
 import boto3
 
+
 def save_to_bucket(user_id, user_data):
     s3 = boto3.resource('s3')
     bucket = s3.Bucket('YOUR_BUCKET_ID')
@@ -13,6 +14,7 @@ def save_to_bucket(user_id, user_data):
         Body=json.dumps(user_data)
     )
 
+
 def load_from_bucket(user_id):
     s3 = boto3.client('s3')
     try:
@@ -21,13 +23,15 @@ def load_from_bucket(user_id):
     except:
         return {}
 
+
 SKILL_NAME = "School Timetable"
 HELP_MESSAGE = "School Timetable will tell you your lessons for the current day or the next. Would you like to set it up?"
 HELP_REPROMPT = "What can I help you with?"
-LAUNCH_MESSAGE = "School timetable can tell you what lessons you have, but first you must tell me your lessons for the week. You can say, tell school timetable set Monday to Maths Physics and English"
+LAUNCH_MESSAGE = "School timetable can tell you what lessons you have, but first you must tell me your lessons for the week. You can say, tell school timetable to set Monday to Maths, Physics, and English"
 STOP_MESSAGE = "Goodbye!"
 FALLBACK_MESSAGE = "School timetable cannot help with that. You can say 'What are my lessons today' or 'Tell school timetable to set Wednesday to English, Mathematics and Chemistry. What can I help you with?"
 FALLBACK_REPROMPT = 'What can I help you with?'
+
 
 def lambda_handler(event, context):
     """  App entry point  """
@@ -89,72 +93,53 @@ def on_intent(request, session):
     intent = request['intent']
     timetable = load_from_bucket(session["user"]["userId"])
 
-days = {
-    "Mon": "monday",
-    "Tue": "tuesday",
-    "Wed": "wednesday",
-    "Thu": "thursday",
-    "Fri": "friday",
-    "Sat": "saturday",
-    "Sun": "sunday"
-}
-# Will be used to get_tomorrow
+days = [
+    ['Mon', "monday"], 
+    ["Tue", "tuesday"], 
+    ["Wed", "wednesday"],
+    ["Thu", "thursday"],
+    ["Fri", "friday"],
+    ["Sat", "saturday"],
+    ["Sun", "sunday"]]
 
 def get_today(intent, session):
     localtime = time.asctime( time.localtime(time.time()) )
     timetable = load_from_bucket(session["user"]["userId"])
-    for keys in days:
-        if keys in localtime:
-            if days[keys] in timetable:
-                speechOutput = "Your lessons for today are " + timetable[days[keys]]
+    for i in range(7):
+        day = days[i][0]
+        if day in localtime:
+            if days[i][1] in timetable:
+                speechOutput = "Your lessons for today are " + timetable[days[i][1]]
+                break
             else:
                 speechOutput = "There are no lessons set for today."
+                break
     cardcontent = speechOutput
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
 
+
 def get_tomorrow(intent, session):
     localtime = time.asctime( time.localtime(time.time()) )
     timetable = load_from_bucket(session["user"]["userId"])
-    if "Sun" in localtime:
-        if "monday" in timetable:
-            speechOutput = "Your lessons for Monday are " + timetable["monday"]
+    for i in range(7):
+        day = days[i][0]
+        if day in localtime:
+            if days[i][1] in timetable:
+                if day != "Sun":
+                    i = i + 1
+                    speechOutput = "Your lessons for tomorrow are " + timetable[days[i][1]]
+                    break
+                else:
+                    i = i - 6
+                    speechOutput = "Your lessons for tomorrow are " + timetable[days[i][1]]
+                    break
         else:
-            speechOutput = "You have no lessons on Monday"
-    elif "Mon" in localtime:
-        if "Tuesday" in localtime:
-            speechOutput = "Your lessons for Tuesday are " + timetable["tuesday"]
-        else:
-            speechOutput = "You have no lessons on Tuesday"
-    elif "Tue" in localtime:
-        if "wednesday" in timetable:
-            speechOutput = "Your lessons for Wednesday are " + timetable["wednesday"]
-        else:
-            speechOutput = "You have no lessons on Wednesday"
-    elif "Wed" in localtime:
-        if "thursday" in timetable:
-            speechOutput = "Your lessons for Thursday are " + timetable["thursday"]
-        else:
-            speechOutput = "You have no lessons on Thursday"
-    elif "Thu" in localtime:
-        if "friday" in timetable:
-            speechOutput = "Your lessons for Friday are " + timetable["friday"]
-        else:
-            speechOutput = "You have no lessons on Friday"
-    elif "Fri" in localtime:
-        if "saturday" in timetable:
-            speechOutput = "Your lessons for Saturday are " + timetable["saturday"]
-        else:
-            speechOutput = "You have no lessons on Saturday"
-    elif "Sat" in localtime:
-        if "sunday" in timetable:
-            speechOutput = "Your lessons for Sunday are " + timetable["sunday"]
-        else:
-            speechOutput = "You have no lessons on Sunday"
-
-    cardcontent = speechOutput    
+            speechOutput = "You have no lessons set for tomorrow"
+    cardcontent = speechOutput
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
+
 
 
 def set_monday(intent, session):
@@ -358,3 +343,4 @@ def response(speech_message):
         'version': '1.0',
         'response': speech_message
     }
+
