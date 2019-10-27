@@ -85,12 +85,6 @@ def on_intent(request, session):
         return get_help_response()
 
 
-def on_intent(request, session):
-    
-    intent_name = request['intent']['name']
-    intent = request['intent']
-    timetable = load_from_bucket(session["user"]["userId"])
-
 days = [
     ['Mon', "monday"], 
     ["Tue", "tuesday"], 
@@ -157,7 +151,7 @@ def set_tuesday(intent, session):
     timetable = load_from_bucket(session["user"]["userId"])
     timetable["tuesday"] = intent['slots']['Tuesday']['value']
     save_to_bucket(session["user"]["userId"], timetable)
-    speechOutput = "I have set Tuesday to " + timetable["tuesday"] fda 
+    speechOutput = "I have set Tuesday to " + timetable["tuesday"]
     cardcontent = speechOutput
 
 
