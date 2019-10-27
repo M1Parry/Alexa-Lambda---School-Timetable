@@ -38,10 +38,8 @@ def lambda_handler(event, context):
 
     if (event['session']['application']['applicationId'] != "YOUR_AMAZON_SKILL_APP_ID"):
         raise ValueError("Invalid Application ID")
-
     if event['session']['new']:
         on_session_started()
-
     if event['request']['type'] == "LaunchRequest":
         return on_launch(event['request'], event['session'])
     elif event['request']['type'] == "IntentRequest":
@@ -125,17 +123,18 @@ def get_tomorrow(intent, session):
     for i in range(7):
         day = days[i][0]
         if day in localtime:
-            if days[i][1] in timetable:
-                if day != "Sun":
-                    i = i + 1
+            if day != "Sun":
+                i = i + 1
+                if days[i][1] in timetable:
                     speechOutput = "Your lessons for tomorrow are " + timetable[days[i][1]]
-                    break
                 else:
-                    i = i - 6
+                    speech_output = "You have no lessons set for tomorrow"
+            else:
+                i = i - 6
+                if days[i][1] in timetable:
                     speechOutput = "Your lessons for tomorrow are " + timetable[days[i][1]]
-                    break
-        else:
-            speechOutput = "You have no lessons set for tomorrow"
+                else:
+                    speech_output = "You have no lessons set for tomorrow"
     cardcontent = speechOutput
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
@@ -343,4 +342,3 @@ def response(speech_message):
         'version': '1.0',
         'response': speech_message
     }
-
