@@ -122,7 +122,7 @@ def get_tomorrow(intent, session):
                 if days[i][1] in timetable:
                     speechOutput = "Your lessons for tomorrow are " + timetable[days[i][1]]
                 else:
-                    speech_output = "You have no lessons set for tomorrow"
+                    speechOutput = "You have no lessons set for tomorrow"
             else:
                 i = i - 6
                 if days[i][1] in timetable:
