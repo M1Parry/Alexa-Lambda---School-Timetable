@@ -97,7 +97,7 @@ days = [
 def get_today(intent, session):
     localtime = time.asctime( time.localtime(time.time()) )
     timetable = load_from_bucket(session["user"]["userId"])
-    for i in range(7):
+    for i in range(len(days)):
         day = days[i][0]
         if day in localtime:
             if days[i][1] in timetable:
@@ -114,7 +114,7 @@ def get_today(intent, session):
 def get_tomorrow(intent, session):
     localtime = time.asctime( time.localtime(time.time()) )
     timetable = load_from_bucket(session["user"]["userId"])
-    for i in range(7):
+    for i in range(len(days)):
         day = days[i][0]
         if day in localtime:
             if day != "Sun":
