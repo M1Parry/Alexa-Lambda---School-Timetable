@@ -38,8 +38,10 @@ def lambda_handler(event, context):
 
     if (event['session']['application']['applicationId'] != "YOUR_AMAZON_SKILL_APP_ID"):
         raise ValueError("Invalid Application ID")
+
     if event['session']['new']:
         on_session_started()
+
     if event['request']['type'] == "LaunchRequest":
         return on_launch(event['request'], event['session'])
     elif event['request']['type'] == "IntentRequest":
@@ -134,6 +136,7 @@ def get_tomorrow(intent, session):
                                                           cardcontent, True))
 
 
+# return response(speech_response(speech_output, False)) Allow user to reply 
 
 def set_monday(intent, session):
 
@@ -142,7 +145,6 @@ def set_monday(intent, session):
     save_to_bucket(session["user"]["userId"], timetable)
     speechOutput = "I have set Monday to " + timetable["monday"]
     cardcontent = speechOutput
-
 
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
@@ -153,7 +155,6 @@ def set_tuesday(intent, session):
     save_to_bucket(session["user"]["userId"], timetable)
     speechOutput = "I have set Tuesday to " + timetable["tuesday"]
     cardcontent = speechOutput
-
 
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
