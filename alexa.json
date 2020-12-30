@@ -2,7 +2,16 @@
     "interactionModel": {
         "languageModel": {
             "invocationName": "school timetable",
+            "modelConfiguration": {
+                "fallbackIntentSensitivity": {
+                    "level": "LOW"
+                }
+            },
             "intents": [
+                {
+                    "name": "AMAZON.FallbackIntent",
+                    "samples": []
+                },
                 {
                     "name": "AMAZON.CancelIntent",
                     "samples": []
@@ -34,7 +43,7 @@
                         "what are my lessons for today",
                         "my lessons for today",
                         "what classes do I have today",
-                        "what are my classes today",
+                        "my classses today",
                         "lessons",
                         "What lessons do I have today",
                         "My lessons today",
@@ -118,11 +127,18 @@
                     "name": "Tomorrow",
                     "slots": [],
                     "samples": [
-                        "what classes do I have tomorrow",
-                        "What lessons do I have tomorrow",
+                        "what are my classes for tomorrow",
+                        "what are my lessons for tomorrow",
+                        "my classes tomorrow",
                         "my lessons tomorrow",
-                        "What are my lessons tomorrow"
+                        "what lessons do i have tomorrow",
+                        "what classes do I have tomorrow",
+                        "What are my lessons for tomorrow"
                     ]
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
                 }
             ],
             "types": []

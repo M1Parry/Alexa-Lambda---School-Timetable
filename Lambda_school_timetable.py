@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import print_function
 
 import time
@@ -7,7 +8,7 @@ import boto3
 
 def save_to_bucket(user_id, user_data):
     s3 = boto3.resource('s3')
-    bucket = s3.Bucket('YOUR_BUCKET_ID')
+    bucket = s3.Bucket('BUCKET_ID')
     bucket.put_object(
         ContentType='application/json',
         Key=user_id,
@@ -18,7 +19,7 @@ def save_to_bucket(user_id, user_data):
 def load_from_bucket(user_id):
     s3 = boto3.client('s3')
     try:
-        data = s3.get_object(Bucket='YOUR_BUCKET_ID', Key=user_id)
+        data = s3.get_object(Bucket='BUCKET_ID', Key=user_id)
         return json.loads(data['Body'].read())
     except:
         return {}
@@ -27,16 +28,15 @@ def load_from_bucket(user_id):
 SKILL_NAME = "School Timetable"
 HELP_MESSAGE = "School Timetable will tell you your lessons for the current day or the next. Would you like to set it up?"
 HELP_REPROMPT = "What can I help you with?"
-LAUNCH_MESSAGE = "School timetable can tell you what lessons you have, but first you must tell me your lessons for the week. You can say, tell school timetable to set Monday to Maths, Physics, and English"
+LAUNCH_MESSAGE = "School timetable can tell you what lessons you have, but first you must tell me your lessons for the week. You can say, tell school timetable set Monday to Maths Physics and English. Would you like to set it up? "
 STOP_MESSAGE = "Goodbye!"
 FALLBACK_MESSAGE = "School timetable cannot help with that. You can say 'What are my lessons today' or 'Tell school timetable to set Wednesday to English, Mathematics and Chemistry. What can I help you with?"
 FALLBACK_REPROMPT = 'What can I help you with?'
-
+# --------------- App entry point -----------------
 
 def lambda_handler(event, context):
     """  App entry point  """
-
-    if (event['session']['application']['applicationId'] != "YOUR_AMAZON_SKILL_APP_ID"):
+    if (event['session']['application']['applicationId'] != "SKILL_APP_ID"): 
         raise ValueError("Invalid Application ID")
 
     if event['session']['new']:
@@ -57,24 +57,25 @@ def on_intent(request, session):
     intent_name = request['intent']['name']
     intent = request['intent']
     # process the intents
+
     if intent_name == "Today":
         return get_today(intent, session)
     elif intent_name == "Tomorrow":
         return get_tomorrow(intent, session)
     elif intent_name == "SetMonday":
-        return set_monday(intent, session )
+        return set_day('monday', intent, session)
     elif intent_name == "SetTuesday":
-        return set_tuesday(intent, session)
+        return set_day('tuesday', intent, session)
     elif intent_name == "SetWednesday":
-        return set_wednesday(intent, session)
+        return set_day('wednesday', intent, session)
     elif intent_name == "SetThursday":
-        return set_thursday(intent, session)
+        return set_day('thursday', intent, session)
     elif intent_name == "SetFriday":
-        return set_friday(intent, session)
+        return set_day('friday', intent, session)
     elif intent_name == "SetSaturday":
-        return set_saturday(intent, session)
+        return set_day('saturday', intent, session)
     elif intent_name == "SetSunday":
-        return set_sunday(intent, session)
+        return set_day('sunday', intent, session)
     elif intent_name == "AMAZON.HelpIntent":
         return get_help_response()
     elif intent_name == "AMAZON.StopIntent":
@@ -83,7 +84,7 @@ def on_intent(request, session):
         return get_stop_response()
     elif intent_name == "AMAZON.FallbackIntent":
         return get_fallback_response()
-    else
+    else:
         return get_help_response()
 
 
@@ -136,83 +137,26 @@ def get_tomorrow(intent, session):
                                                           cardcontent, True))
 
 
-# return response(speech_response(speech_output, False)) Allow user to reply 
+def set_day(day, intent, session):
+    day_dictionary = {
+        'monday': 'Monday',
+        'tuesday': 'Tuesday',
+        'wednesday': 'Wednesday',
+        'thursday': 'Thursday',
+        'friday': 'Friday',
+        'saturday': 'Saturday',
+        'sunday': 'Sunday' }        
 
-def set_monday(intent, session):
-
+    capitalDay = day_dictionary[day]
     timetable = load_from_bucket(session["user"]["userId"])
-    timetable["monday"] = intent['slots']['Monday']['value']
-    save_to_bucket(session["user"]["userId"], timetable)
-    speechOutput = "I have set Monday to " + timetable["monday"]
+    timetable[day] = intent['slots'][capitalDay]['value']
+    save_to_bucket(session['user']['userId'], timetable)
+    speechOutput = "I have set " + capitalDay + " to " + timetable[day]
     cardcontent = speechOutput
 
     return response(speech_response_with_card(SKILL_NAME, speechOutput,
                                                           cardcontent, True))
 
-def set_tuesday(intent, session):
-    timetable = load_from_bucket(session["user"]["userId"])
-    timetable["tuesday"] = intent['slots']['Tuesday']['value']
-    save_to_bucket(session["user"]["userId"], timetable)
-    speechOutput = "I have set Tuesday to " + timetable["tuesday"]
-    cardcontent = speechOutput
-
-    return response(speech_response_with_card(SKILL_NAME, speechOutput,
-                                                          cardcontent, True))
-
-def set_wednesday(intent, session):
-    timetable = load_from_bucket(session["user"]["userId"])
-    timetable["wednesday"] = intent['slots']['Wednesday']['value']
-    save_to_bucket(session["user"]["userId"], timetable)
-    speechOutput = "I have set Wednesday to " + timetable["wednesday"]
-    cardcontent = speechOutput
-
-
-    return response(speech_response_with_card(SKILL_NAME, speechOutput,
-                                                          cardcontent, True))
-
-def set_thursday(intent, session):
-    timetable = load_from_bucket(session["user"]["userId"])
-    timetable["thursday"] = intent['slots']['Thursday']['value']
-    save_to_bucket(session["user"]["userId"], timetable)
-    speechOutput = "I have set Thursday to " + timetable["thursday"]
-    cardcontent = speechOutput
-
-    return response(speech_response_with_card(SKILL_NAME, speechOutput,
-                                                          cardcontent, True))
-
-def set_friday(intent, session):
-    timetable = load_from_bucket(session["user"]["userId"])
-    timetable["friday"] = intent['slots']['Friday']['value']
-    save_to_bucket(session["user"]["userId"], timetable)
-    speechOutput = "I have set Friday to " + timetable["friday"]
-    cardcontent = speechOutput
-
-
-    return response(speech_response_with_card(SKILL_NAME, speechOutput,
-                                                          cardcontent, True))
-
-def set_saturday(intent, session):
-    timetable = load_from_bucket(session['user']['userId'])
-    timetable["saturday"] = intent['slots']['Saturday']['value']
-    save_to_bucket(session["user"]['userId'], timetable)
-    speechOutput = "I have set Saturday to " + timetable["saturday"]
-    cardcontent = speechOutput
-
-
-    return response(speech_response_with_card(SKILL_NAME, speechOutput,
-                                                          cardcontent, True))
-
-
-def set_sunday(intent, session):
-    timetable = load_from_bucket(session['user']['userId'])
-    timetable["sunday"] = intent['slots']['Sunday']['value']
-    save_to_bucket(session["user"]['userId'], timetable)
-    speechOutput = "I have set Sunday to " + timetable["sunday"]
-    cardcontent = speechOutput
-
-
-    return response(speech_response_with_card(SKILL_NAME, speechOutput,
-                                                          cardcontent, True))
 
 def get_help_response():
     """ get and return the help string  """
@@ -228,7 +172,7 @@ def get_launch_response(request, session):
         return response(speech_response_prompt(speech_message,
                                                        speech_message, False))
     else:
-        return get_today(request, session)
+        return get_today(request, session) #This is where it ends up all the time
 
 def get_stop_response():
     """ end the session, user wants to quit the game """
@@ -244,9 +188,11 @@ def get_fallback_response():
 
 def on_session_started():
     """" called when the session starts  """
+    #print("on_session_started")
 
 def on_session_ended():
     """ called on session ends """
+    #print("on_session_ended")
 
 def on_launch(request, session):
     """ called on Launch, we reply with a launch message  """
@@ -337,3 +283,4 @@ def response(speech_message):
         'version': '1.0',
         'response': speech_message
     }
+
